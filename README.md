@@ -1,18 +1,21 @@
 # Hand Gesture Control Interface
 
-This project is a real-time hand gesture recognition system built with Python and OpenCV. It allows users to control applications by moving their hands over predefined areas on the screen.
+A real-time hand gesture recognition system built with Python and OpenCV. This interface allows users to trigger commands by moving their hands over customizable on-screen zones.
 
 ## Features
 
-- **Real-time Gesture Detection**: Uses background subtraction to detect motion in specific zones.
+- **Real-time Gesture Detection**: Uses background subtraction to detect motion in user-defined zones.
 - **Interactive UI**: Displays command zones and visual feedback directly on the camera feed.
-- **Customizable Commands**: Easily configure command zones for different actions (e.g., "Take Photo", "Play Video", "Exit").
-- **Calibration Process**: Includes a calibration phase to adapt to the environment's lighting and background.
+- **Dynamic Layout Editing**: Press 'e' to enter a drag-and-drop interface to move and reposition command zones in real-time.
+- **Multi-Camera Support**: Automatically detects available cameras and allows the user to select which one to use.
+- **Photo Saving**: A "Take Photo" command that saves the current frame to a local `photos/` directory with a timestamp.
+- **User-Friendly Calibration**: A simple, key-press-initiated process to calibrate the background for accurate motion detection.
 
-## Prerequisites
+## Requirements
 
 - Python 3.x
 - A webcam
+- The packages listed in `requirements.txt`
 
 ## Setup and Installation
 
@@ -31,20 +34,33 @@ This project is a real-time hand gesture recognition system built with Python an
     python main.py
     ```
 
-2.  **Start Calibration:**
-    - A window showing your webcam feed will appear.
-    - Press the **'s'** key on your keyboard to begin the calibration process.
+2.  **Initial Menu:**
+    - A window will appear showing your webcam feed and a menu.
+    - **Press 's'**: To proceed directly to calibration.
+    - **Press 'e'**: To enter **Edit Mode**.
+    - **Press 'q'**: To quit the program.
 
-3.  **Get Ready:**
-    - You will have a few seconds to prepare before calibration starts.
+3.  **Edit Mode (Optional):**
+    - If you pressed 'e', you can now customize the layout.
+    - **Drag and Drop**: Use your mouse to click and drag the command boxes to your desired positions.
+    - **Press 's'**: To save your new layout and return to the initial menu.
 
-4.  **Calibrate:**
-    - Keep the scene static (without your hands in it) for a few seconds. The system is learning the background.
+4.  **Calibration:**
+    - From the initial menu, press 's'.
+    - You will have a 3-second countdown to get ready.
+    - Keep the scene static (without your hands in it) for 3 seconds while the system learns the background.
 
 5.  **Interact:**
-    - After calibration is complete, you can move your hand over the command boxes (e.g., "Take Photo", "Exit") to trigger actions.
-    - A progress bar will fill up as you hold your hand over a zone.
-    - Once the action is triggered, the system is ready for the next command.
+    - After calibration, move your hand over a command box to start activating it.
+    - A progress bar will fill up. Hold your hand steady until it's full to trigger the command.
+    - **Take Photo**: If triggered, the current image will be saved in the `photos/` folder.
 
 6.  **Exit the program:**
-    - You can either trigger the "Exit" command with your hand or press the **'q'** key to quit.
+    - You can trigger the "Exit" command with your hand or press the **'q'** key at any time in the main detection loop.
+
+## File Structure
+
+- `main.py`: The main application script.
+- `edit_layout.py`: A module containing the functionality for the interactive layout editor.
+- `requirements.txt`: A list of Python dependencies.
+- `photos/`: A directory that will be created to store saved photos.
