@@ -1,72 +1,86 @@
-# Hand Gesture Control Interface
+# 手勢控制介面
 
-A real-time hand gesture recognition system built with Python and OpenCV. This interface allows users to trigger commands by moving their hands over customizable on-screen zones.
+一個使用 Python 和 OpenCV 建立的即時手勢辨識系統。此介面允許使用者透過在可自訂的螢幕區域上移動手部來觸發指令。
 
-## Features
+## 功能特色
 
-- **Real-time Gesture Detection**: Uses background subtraction to detect motion in user-defined zones.
-- **Interactive UI**: Displays command zones and visual feedback directly on the camera feed.
-- **Dynamic Layout Editing**: Press 'e' to enter a drag-and-drop interface to move and reposition command zones in real-time.
-- **Multi-Camera Support**: Automatically detects available cameras and allows the user to select which one to use.
-- **Photo Saving**: A "Take Photo" command that saves the current frame to a local `photos/` directory with a timestamp.
-- **User-Friendly Calibration**: A simple, key-press-initiated process to calibrate the background for accurate motion detection.
+- **即時手勢偵測**：使用背景減除法偵測使用者定義區域中的運動。
+- **互動式使用者介面**：直接在攝影機畫面中顯示指令區域和視覺回饋。
+- **動態佈局編輯**：按下 'e' 鍵進入拖放介面，即時移動和重新定位指令框。
+- **多攝影機支援**：自動偵測可用的攝影機並允許使用者選擇要使用的攝影機。
+- **照片儲存**：一個「拍照」指令，將當前畫面以時間戳記儲存到本地 `photos/` 目錄。
+- **使用者友善的校準**：一個簡單的、透過按鍵啟動的過程，用於校準背景以實現準確的運動偵測。
 
-## Requirements
+## 系統要求
 
 - Python 3.x
-- A webcam
-- The packages listed in `requirements.txt`
+- 網路攝影機
+- `requirements.txt` 中列出的套件
 
-## Setup and Installation
+## 繁體中文顯示的字體要求
 
-1.  **Clone the repository (or download the files).**
+本應用程式使用繁體中文字元作為其使用者介面。為確保正確顯示，系統會依序嘗試從以下路徑載入字體檔案：
 
-2.  **Install the required Python packages:**
-    Open a terminal or command prompt in the project directory and run:
+1.  `C:/Windows/Fonts/msjh.ttf` (微軟正黑體)
+2.  `C:/Windows/Fonts/mingliu.ttc` (細明體)
+3.  `msjh.ttf` (來自專案目錄)
+
+如果這些字體都找不到，應用程式將會回退到預設系統字體，這可能無法正確顯示繁體中文字元。
+
+**字體問題疑難排解：**
+-   **字體缺失**：如果繁體中文字元顯示不正確，請確保您的 `C:/Windows/Fonts` 目錄中安裝了 `msjh.ttf` 或 `mingliu.ttc`。這些是標準的 Windows 字體。
+-   **自訂字體**：您可以將相容的 `.ttf` 或 `.ttc` 字體檔案直接放置在專案的根目錄中，並將其命名為 `msjh.ttf`，以便應用程式使用。
+
+## 設定與安裝
+
+1.  **複製儲存庫 (或下載檔案)。**
+
+2.  **安裝所需的 Python 套件：**
+    在專案目錄中開啟終端機或命令提示字元並執行：
     ```bash
     pip install -r requirements.txt
     ```
 
-## How to Use
+## 如何使用
 
-1.  **Run the main script:**
+1.  **執行主程式：**
     ```bash
     python main.py
     ```
 
-2.  **Initial Menu:**
-    - A window will appear showing your webcam feed and a menu.
-    - **Press 's'**: To proceed directly to calibration.
-    - **Press 'e'**: To enter **Edit Mode**.
-    - **Press 'q'**: To quit the program.
+2.  **初始選單：**
+    - 將會出現一個視窗，顯示您的網路攝影機畫面和選單。
+    - **按下 's'**：直接進入校準。
+    - **按下 'e'**：進入 **編輯模式**。
+    - **按下 'q'**：退出程式。
 
-3.  **Edit Mode (Optional):**
-    - If you pressed 'e', you can now customize the layout.
-    - **Drag and Drop**: Use your mouse to click and drag the command boxes to your desired positions.
-    - **Press 's'**: To save your new layout and return to the initial menu.
+3.  **編輯模式 (可選)：**
+    - 如果您按下 'e'，現在可以自訂佈局。
+    - **拖放**：使用滑鼠點擊並拖曳指令框到您想要的位置。
+    - **按下 's'**：儲存新佈局並返回初始選單。
 
-4.  **Calibration:**
-    - From the initial menu, press 's'.
-    - You will have a 3-second countdown to get ready.
-    - Keep the scene static (without your hands in it) for 3 seconds while the system learns the background.
+4.  **校準：**
+    - 從初始選單中，按下 's'。
+    - 您將有 3 秒的倒數計時準備。
+    - 在系統學習背景的 3 秒內，請保持畫面靜止 (不要將手放入畫面中)。
 
-5.  **Interact:**
-    - After calibration, move your hand over a command box to start activating it.
-    - A progress bar will fill up. Hold your hand steady until it's full to trigger the command.
-    - **Take Photo**: If triggered, the current image will be saved in the `photos/` folder.
+5.  **互動：**
+    - 校準完成後，將手移到指令框上方以開始啟動它。
+    - 進度條將會填滿。保持手部穩定直到填滿，以觸發指令。
+    - **拍照**：如果觸發，當前圖像將儲存到 `photos/` 資料夾中。
 
-6.  **Exit the program:**
-    - You can trigger the "Exit" command with your hand or press the **'q'** key at any time in the main detection loop.
+6.  **退出程式：**
+    - 您可以在主偵測迴圈中的任何時候，透過手勢觸發「退出」指令或按下 **'q'** 鍵來退出程式。
 
-## File Structure
+## 檔案結構
 
-- `main.py`: The main application script.
-- `edit_layout.py`: A module containing the functionality for the interactive layout editor.
-- `requirements.txt`: A list of Python dependencies.
-- `photos/`: A directory that will be created to store saved photos.
+- `main.py`：主應用程式腳本。
+- `edit_layout.py`：包含互動式佈局編輯器功能的模組。
+- `requirements.txt`：Python 依賴套件列表。
+- `photos/`：將用於儲存照片的目錄。
 
-## Recent Updates
+## 最近更新
 
-- **`main.py`**: General updates and improvements to the main application logic.
-- **`requirements.txt`**: Dependencies have been updated.
-- **New Media**: Added new image files to `photos/` and a video file `高清版瑞克搖.mp4`.
+- **`main.py`**：主應用程式邏輯的通用更新和改進。
+- **`requirements.txt`**：依賴套件已更新。
+- **新媒體**：新增了圖像檔案到 `photos/` 和一個影片檔案 `高清版瑞克搖.mp4`。
