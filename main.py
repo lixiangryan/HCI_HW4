@@ -5,7 +5,7 @@ import os
 import time
 from datetime import datetime
 
-FONT_PATHS = ["msjh.ttf", "C:/Windows/Fonts/msjh.ttf"] # You might need to change this to a font available on your system
+FONT_PATHS = ["C:/Windows/Fonts/msjh.ttf", "C:/Windows/Fonts/mingliu.ttc", "msjh.ttf"] # You might need to change this to a font available on your system
 FONT_SIZE = 20
 
 # --- 參數設定 ---
