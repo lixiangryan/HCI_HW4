@@ -1,4 +1,11 @@
-FONT_PATH = "msjh.ttf" # You might need to change this to a font available on your system
+import cv2
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+import os
+import time
+from datetime import datetime
+
+FONT_PATHS = ["msjh.ttf", "C:/Windows/Fonts/msjh.ttf"] # You might need to change this to a font available on your system
 FONT_SIZE = 20
 
 # --- 參數設定 ---
@@ -33,16 +40,23 @@ def draw_ui(frame, zones, accumulators=None, threshold=None):
         
         # 3. 最後畫文字，確保文字在最上層
         # 使用 put_chinese_text 函式來顯示中文
-        frame = put_chinese_text(frame, name, (x + 10, y + h - 15 - FONT_SIZE // 2), FONT_PATH, FONT_SIZE, (255, 255, 255))
+        frame = put_chinese_text(frame, name, (x + 10, y + h - 15 - FONT_SIZE // 2), FONT_PATHS, FONT_SIZE, (255, 255, 255))
     return frame
 
-def put_chinese_text(frame, text, position, font_path, font_size, color):
+def put_chinese_text(frame, text, position, font_paths, font_size, color):
     img_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
-    try:
-        font = ImageFont.truetype(font_path, font_size)
-    except IOError:
-        print(f"錯誤：找不到字體檔案 '{font_path}'，請確認路徑是否正確。")
+    
+    font = None
+    for path in font_paths:
+        try:
+            font = ImageFont.truetype(path, font_size)
+            break
+        except IOError:
+            continue
+
+    if font is None:
+        print(f"錯誤：找不到任何字體檔案於 {font_paths}，請確認路徑是否正確。將使用預設字體。")
         font = ImageFont.load_default()
     
     draw.text(position, text, font=font, fill=(color[2], color[1], color[0])) # OpenCV BGR to PIL RGB
