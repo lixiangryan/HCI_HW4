@@ -64,3 +64,9 @@ A real-time hand gesture recognition system built with Python and OpenCV. This i
 - `edit_layout.py`: A module containing the functionality for the interactive layout editor.
 - `requirements.txt`: A list of Python dependencies.
 - `photos/`: A directory that will be created to store saved photos.
+
+## Recent Updates
+
+- **`main.py`**: General updates and improvements to the main application logic.
+- **`requirements.txt`**: Dependencies have been updated.
+- **New Media**: Added new image files to `photos/` and a video file `高清版瑞克搖.mp4`.

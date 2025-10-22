@@ -1,9 +1,5 @@
-import cv2
-import numpy as np
-import time
-import os
-from datetime import datetime
-from edit_layout import run_edit_mode
+FONT_PATH = "msjh.ttf" # You might need to change this to a font available on your system
+FONT_SIZE = 20
 
 # --- 參數設定 ---
 CAP_WIDTH = 1280
@@ -25,18 +21,32 @@ CAMERA_WAIT_TIMEOUT = 10 # 等待攝影機啟動的最長時間（秒）
 # --- 繪圖函式 ---
 def draw_ui(frame, zones, accumulators=None, threshold=None):
     # 偵錯：重新排序繪圖順序，確保框線總是可見
-    # 1. 先畫所有框線和文字
     for i, (x, y, w, h, name) in enumerate(zones):
-        cv2.rectangle(frame, (x, y), (x+w, y+h), BOX_COLOR, 3)
-        cv2.putText(frame, name, (x + 10, y + h - 15), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-
-    # 2. 如果有提供進度，再畫進度條 (會蓋掉部分文字和框線，但可確保框線存在)
-    if accumulators is not None and threshold is not None:
-        for i, (x, y, w, h, name) in enumerate(zones):
+        # 1. 如果有提供進度，先畫進度條
+        if accumulators is not None and threshold is not None:
             progress = min(accumulators[i] / threshold, 1.0)
             if progress > 0:
                 cv2.rectangle(frame, (x, y), (x + int(w * progress), y + h), BOX_COLOR, -1)
+
+        # 2. 接著畫框線
+        cv2.rectangle(frame, (x, y), (x+w, y+h), BOX_COLOR, 3)
+        
+        # 3. 最後畫文字，確保文字在最上層
+        # 使用 put_chinese_text 函式來顯示中文
+        frame = put_chinese_text(frame, name, (x + 10, y + h - 15 - FONT_SIZE // 2), FONT_PATH, FONT_SIZE, (255, 255, 255))
+    return frame
+
+def put_chinese_text(frame, text, position, font_path, font_size, color):
+    img_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(img_pil)
+    try:
+        font = ImageFont.truetype(font_path, font_size)
+    except IOError:
+        print(f"錯誤：找不到字體檔案 '{font_path}'，請確認路徑是否正確。")
+        font = ImageFont.load_default()
+    
+    draw.text(position, text, font=font, fill=(color[2], color[1], color[0])) # OpenCV BGR to PIL RGB
+    return cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
 
 # --- 攝影機選擇函式 ---
 def select_camera():
@@ -122,7 +132,7 @@ def main():
         cv2.putText(frame, "Press 'e' to edit layout", (50, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
         cv2.putText(frame, "Press 'q' to quit", (50, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
-        draw_ui(frame, COMMAND_ZONES)
+        frame = draw_ui(frame, COMMAND_ZONES)
         cv2.imshow(window_name, frame)
         
         key = cv2.waitKey(1) & 0xFF
@@ -152,7 +162,7 @@ def main():
         cv2.putText(frame, f"Get Ready! Calibration starts in: {remaining_time}", 
                     (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
-        draw_ui(frame, COMMAND_ZONES)
+        frame = draw_ui(frame, COMMAND_ZONES)
         cv2.imshow("Hand Gesture Interface", frame)
         cv2.waitKey(1)
 
@@ -168,7 +178,7 @@ def main():
         cv2.putText(frame, f"Calibrating... Keep Still: {remaining_time}", 
                     (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         
-        draw_ui(frame, COMMAND_ZONES)
+        frame = draw_ui(frame, COMMAND_ZONES)
         cv2.imshow("Hand Gesture Interface", frame)
         cv2.waitKey(1)
         
@@ -207,6 +217,34 @@ def main():
                     cv2.imwrite(filename, frame)
                     print(f"照片已儲存至: {filename}")
 
+                elif name == "播放影片 (Play Video)":
+                    video_path = "高清版瑞克搖.mp4"
+                    if not os.path.exists(video_path):
+                        print(f"錯誤：影片檔案 '{video_path}' 不存在。")
+                    else:
+                        player = cv2.VideoCapture(video_path)
+                        if not player.isOpened():
+                            print(f"錯誤：無法開啟影片檔案 '{video_path}'。")
+                        else:
+                            print(f"正在播放影片: {video_path}")
+                            # 隱藏主視窗，避免影片播放時干擾
+                            cv2.destroyWindow("Hand Gesture Interface")
+                            cv2.destroyWindow("Foreground Mask")
+
+                            while True:
+                                ret_video, frame_video = player.read()
+                                if not ret_video:
+                                    break
+                                cv2.imshow("Video Player", frame_video)
+                                if cv2.waitKey(25) & 0xFF == ord('q'):
+                                    break
+                            player.release()
+                            cv2.destroyWindow("Video Player")
+                            print("影片播放結束。")
+                            # 重新顯示主視窗
+                            cv2.namedWindow("Hand Gesture Interface")
+                            cv2.namedWindow("Foreground Mask")
+
                 if name == "結束程式 (Exit)":
                     cap.release()
                     cv2.destroyAllWindows()
@@ -214,7 +252,7 @@ def main():
                 
                 zone_accumulators[i] = 0
         
-        draw_ui(frame, COMMAND_ZONES, zone_accumulators, TRIGGER_THRESHOLD)
+        frame = draw_ui(frame, COMMAND_ZONES, zone_accumulators, TRIGGER_THRESHOLD)
 
         cv2.imshow("Hand Gesture Interface", frame)
         cv2.imshow("Foreground Mask", fg_mask) 
